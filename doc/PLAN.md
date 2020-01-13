@@ -12,7 +12,7 @@
 * Regular bricks: Bricks that 'pop' after one hit
 * PowerUp bricks: differently colored bricks that may grant specific power-ups
 * Hard bricks: Bricks that 'pop' only after multiple hits (2 or 3)
-* 'Hydra' bricks: These split into 2 halves, each half then being a Regula brick. (Feature implementation)
+* 'Hydra' bricks: These split into 2 halves, each half then being a Regula brick. (Feature implementation left to discretion during code implementation)
 * Permanent bricks: Bricks that cannot be broken, and are just present as obstacles.
 
 ### Power Up Ideas
