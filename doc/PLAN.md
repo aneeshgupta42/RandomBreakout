@@ -2,18 +2,18 @@
 ## Name: Aneesh Gupta
 
 ### Breakout Variant
-* The variant I liked the best was *Circus*. The two circus performers using the paddle as a seesaw was really innovative, and added an element of 'Physics' to the gameplay. The side-scrolling game screen was also enjoyable.
+* The variant I liked the best was *Circus*. The two circus performers jumping using the paddle as a seesaw was really innovative, and added an element of 'Physics' to the gameplay. The side-scrolling game screen was also enjoyable.
 ### General Level Descriptions
 * Level 1: There are 3 rows of bricks, all *regular* bricks. The ball speed, and the distance between the paddle and the bricks are standard.
 * Level 2: There are 5 rows of bricks, with *regular* bricks, *hard* bricks, *power-up* bricks, and *permanent* bricks all present. Same distance between paddle and bricks, and same ball speed.
-* Level 3: There are 6 rows of bricks, of different types (*regular, hard, power-up, hydra,* and *permanent*). The ball moves at 1.2x speed. The distance between the bricks and the paddle has also been reduced by some factor.
+* Level 3: There are 6 rows of bricks, of different types (*regular, hard, power-up, permanent,* and *hydra*). The ball moves at 1.2x speed. The distance between the bricks and the paddle has also been reduced by some factor.
 
 ### Bricks Ideas
 * Regular bricks: Bricks that 'pop' after one hit
 * PowerUp bricks: differently colored bricks that may grant specific power-ups
 * Hard bricks: Bricks that 'pop' only after multiple hits (2 or 3)
-* 'Hydra' bricks: These split into 2 halves, each half then being a Regula brick. (Feature implementation left to discretion during code implementation)
 * Permanent bricks: Bricks that cannot be broken, and are just present as obstacles.
+* 'Hydra' bricks: These split into 2 halves, each half then being a Regula brick. (Feature implementation left to discretion during code implementation)
 
 ### Power Up Ideas
 * Elongate paddle: This powerup increases the length of the paddle.
