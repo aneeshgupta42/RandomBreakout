@@ -5,8 +5,8 @@
 * The variant I liked the best was *Circus*. The two circus performers using the paddle as a seesaw was really innovative, and added an element of 'Physics' to the gameplay. The side-scrolling game screen was also enjoyable.
 ### General Level Descriptions
 * Level 1: There are 3 rows of bricks, all *regular* bricks. The ball speed, and the distance between the paddle and the bricks are standard.
-* Level 2: There are 5 rows of bricks, with *regular* bricks, *hard* bricks, *power-up* bricks, and permanent bricks all present. Same distance between paddle and bricks, and same ball speed.
-* Level 3: There are 6 rows of bricks, of different types (*regular, hard, power-up, hydra, and permanent*). The ball moves at 1.2x speed. The distance between the bricks and the paddle has also been reduced by some factor.
+* Level 2: There are 5 rows of bricks, with *regular* bricks, *hard* bricks, *power-up* bricks, and *permanent* bricks all present. Same distance between paddle and bricks, and same ball speed.
+* Level 3: There are 6 rows of bricks, of different types (*regular, hard, power-up, hydra,* and *permanent*). The ball moves at 1.2x speed. The distance between the bricks and the paddle has also been reduced by some factor.
 
 ### Bricks Ideas
 * Regular bricks: Bricks that 'pop' after one hit
