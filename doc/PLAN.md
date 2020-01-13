@@ -27,4 +27,5 @@
 * 'L' key: Adds an extra life to the player's game.
 * '1-3' keys: Level toggle; takes you to the specified level.
 ### Something Extra
+* There is a pane to keep track of the level, lives, and 'score'.
 * In the middle of the level, randomly, the arrow keys flip (pressing left makes the paddle go right, and vice versa). Possibly, the paddle can also wrap around the sides of the screen (after encountering right side wall, paddle goes in and appears again from left).
