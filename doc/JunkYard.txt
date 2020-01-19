@@ -1,0 +1,26 @@
+//        if (myMover.getBoundsInParent().intersects(myBouncer.getBoundsInParent()) && (myBouncer.getY() + myBouncer.getBoundsInLocal().getHeight() -3 > myMover.getY())) {
+////            myBouncer.setY(myBouncer.getY() + -1*BOUNCER_SPEED * elapsedTime);
+//            ball_y_direction *= -1;
+//        }
+//        if (myMover.getBoundsInParent().intersects(myBouncer.getBoundsInParent()) && (myBouncer.getY() + myBouncer.getBoundsInLocal().getHeight() -2 > myMover.getY())) {
+////            myBouncer.setY(myBouncer.getY() + -1*BOUNCER_SPEED * elapsedTime);
+//            ball_x_direction *= -1;
+//        }
+//        if (myMover.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
+//            ball_y_direction *= -1;
+//        }
+
+        // check for collisions
+        // with shapes, can check precisely
+        // NEW Java 10 syntax that simplifies things (but watch out it can make code harder to understand)
+        // var intersection = Shape.intersect(myMover, myGrower);
+
+        // NEW Java 12 syntax that some prefer (but watch out for the many special cases!)
+        //   https://blog.jetbrains.com/idea/2019/02/java-12-and-intellij-idea/
+        // Note, must set Project Language Level to "13 Preview" under File -> Project Structure
+        // switch (code) {
+        //     case RIGHT -> myMover.setX(myMover.getX() + MOVER_SPEED);
+        //     case LEFT -> myMover.setX(myMover.getX() - MOVER_SPEED);
+        //     case UP -> myMover.setY(myMover.getY() - MOVER_SPEED);
+        //     case DOWN -> myMover.setY(myMover.getY() + MOVER_SPEED);
+        // }
