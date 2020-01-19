@@ -22,12 +22,14 @@ public class Brick {
     private int row;
     private boolean powerUp;
     private boolean permanentBrick;
+    private boolean isHydra;
 
     public Brick (String gif_string, int hits, int pop, boolean power, boolean perm){
         this.hitsAllowed = hits;
         this.popped = pop;
         this.powerUp = power;
         this.permanentBrick = perm;
+        this.isHydra = false; //Default case
 
         String style = gif_string;
         Image brickGif = new Image(this.getClass().getClassLoader().getResourceAsStream(style));
@@ -35,6 +37,19 @@ public class Brick {
         this.brickImage.setFitWidth(WIDTH);
         this.brickImage.setFitHeight(HEIGHT);
 
+    }
+    public Brick (String gif_string, int hits, int pop, boolean power, boolean perm, boolean hydra){
+        this.hitsAllowed = hits;
+        this.popped = pop;
+        this.powerUp = power;
+        this.permanentBrick = perm;
+        this.isHydra = hydra; //Default case
+
+        String style = gif_string;
+        Image brickGif = new Image(this.getClass().getClassLoader().getResourceAsStream(style));
+        this.brickImage =  new ImageView(brickGif);
+        this.brickImage.setFitWidth(WIDTH);
+        this.brickImage.setFitHeight(HEIGHT);
     }
 //    public Brick (int hitsAllowed){
 //        String style = new String();
@@ -68,14 +83,18 @@ public class Brick {
 //        this.brickImage.setFitHeight(HEIGHT);
 //    }
 
-    public void setHEIGHT(int h) {
+    public void setHEIGHT(int h)
+    {
         this.HEIGHT = h;
+        this.brickImage.setFitHeight(h);
     }
     public void decreaseHits(){
         this.hitsAllowed --;
     }
-    public void setWIDTH(int w){
+    public void setWIDTH(int w)
+    {
         this.WIDTH = w;
+        this.brickImage.setFitWidth(w);
     }
 
     public ImageView getBrickImage(){
@@ -105,6 +124,7 @@ public class Brick {
     public boolean isPermanentBrick(){
         return this.permanentBrick;
     }
+    public boolean isHydra(){ return this.isHydra;}
 
     public void setBrickX(double x) {this.brickImage.setX(x);}
     public void setBrickY(double y) {this.brickImage.setY(y);}

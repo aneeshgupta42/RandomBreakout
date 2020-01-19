@@ -118,9 +118,14 @@ public class Main extends Application {
 
     private void advanceLevel(int lvl) throws FileNotFoundException {
         animation.stop();
-        gameScene = setupGame(SIZE, SIZE, BACKGROUND, lvl);
-        advanceScene(gameScene);
-        ResetParams();
+        if(lvl>3){
+            System.out.println("GAME OVER - YOU WON!!");
+        }
+        else {
+            gameScene = setupGame(SIZE, SIZE, BACKGROUND, lvl);
+            advanceScene(gameScene);
+            ResetParams();
+        }
     }
 
     private void ResetParams() {
@@ -157,7 +162,7 @@ public class Main extends Application {
                         if(code == 1){temp = new Brick("brick3.gif", 1, 0, false, false);}
                         else if(code == 2){temp = new Brick("brick5.gif", 3,0,false, false);}
                         else if(code == 3){temp = new Brick("brick7.gif", 1,0,false, true);}
-                        else if(code == 4){temp = new Brick("brick3.gif", 1, 0, false, false);}
+                        else if(code == 4){temp = new Brick("brick2.gif", 1, 0, false, false, true);}
                         else if(code == 5){temp = new Brick("brick10.gif", 1,0,true, false);}
 
                     temp.setBrickX(xValue);
@@ -276,6 +281,21 @@ public class Main extends Application {
             advanceLevel(currentLevel);
         }
     }
+    private void addHydraBricks(int x, int y){
+        Brick child1 = new Brick("brick1.gif", 1, 0, false, false);
+        Brick child2 = new Brick("brick1.gif", 1, 0, false, false);
+        child1.setWIDTH(30);
+        child1.setHEIGHT(18);
+        child1.setRow(3);
+        child2.setRow(3);
+        child2.setWIDTH(30);
+        child1.setHEIGHT(18);
+        child1.setBrickX(x); child1.setBrickY(y);
+        child2.setBrickX(x+ child1.getWidth()+5); child2.setBrickY(y);
+        root.getChildren().addAll(child1.getBrickImage(), child2.getBrickImage());
+        brickList.add(child1);
+        brickList.add(child2);
+    }
     private void activatePowerUp(){
         Random random = new Random();
         int whichPowerUp = random.nextInt(3)+1;
@@ -294,9 +314,17 @@ public class Main extends Application {
             Brick currBrick = brickList.get(i);
             ImageView tempImage = currBrick.getBrickImage();
             if (tempImage.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
-                ball_y_direction *= -1;
+                if((tempImage.getY()<=myBouncer.getY()+myBouncer.getBoundsInLocal().getHeight()/2) && (myBouncer.getY()+myBouncer.getBoundsInLocal().getHeight()/2 <=tempImage.getY()+tempImage.getFitHeight())){
+//                    ball_y_direction*=-1;
+                    ball_x_direction*=-1;
+                }
+                else{
+                ball_y_direction *= -1;}
                 currBrick.decreaseHits();
                 if(currBrick.getHitsAllowed() == 0 && !currBrick.isPermanentBrick()) {
+                    if(currBrick.isHydra()){
+                        addHydraBricks((int)tempImage.getX(), (int)tempImage.getY());
+                    }
                     brickList.remove(brickList.get(i));
                     root.getChildren().remove(tempImage);
                     gameScore++;
@@ -343,7 +371,14 @@ public class Main extends Application {
         //CHEATCODE: Level Toggle: 1,2,3
         if(code.isDigitKey()){
             try {
-                advanceLevel(code.getCode()-48);
+                if(code.getCode()-48>3){
+                    advanceLevel(3);
+                    currentLevel =3;
+                }
+                else{
+                    advanceLevel(code.getCode()-48);
+                    currentLevel = code.getCode()-48;
+                }
             } catch (FileNotFoundException e) {
 
                 e.printStackTrace();
