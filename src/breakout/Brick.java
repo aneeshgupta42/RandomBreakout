@@ -19,6 +19,7 @@ public class Brick {
     public static int HEIGHT = 30;
     private int hitsAllowed;
     private int popped;
+    private int row;
     private boolean powerUp;
     private boolean permanentBrick;
 
@@ -107,5 +108,10 @@ public class Brick {
 
     public void setBrickX(double x) {this.brickImage.setX(x);}
     public void setBrickY(double y) {this.brickImage.setY(y);}
+    public void setRow(int x){ this.row = x;}
+
+    public int getRow(){
+        return this.row;
+    }
 
 }

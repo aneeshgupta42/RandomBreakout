@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -52,12 +53,14 @@ public class Main extends Application {
 
     // some things needed to remember during game
     private Stage stage;
+    Timeline animation = new Timeline();
     private Scene gameScene;
-    private Scene splashScreen;
     private ImageView myBouncer;
     private Rectangle myMover;
     private Group root;
+    private Label livesDisp;
     private int currentLevel =1;
+    private int currentLives;
 
 
     /**
@@ -70,11 +73,21 @@ public class Main extends Application {
         Button cont = new Button("Start Game");
         cont.setLayoutX(170);
         cont.setLayoutY(200);
-
         cont.setOnAction(e -> advanceScene(gameScene));
+
+        Label rules = new Label("RandomBreakout\n" +
+                "\t 1. Use arrow keys to move paddle, and guide ball to pop bricks\n" +
+                "\t 2. You get three lives per level\n" +
+                "\t 3. There are different types of bricks in this game\n" +
+                "\t 4. In the middle of the level the control's change (such as arrow directions)\n"+
+                "\t\t Adapt to this change and finish the level");
+        rules.setLayoutX(10);
+        rules.setLayoutY(100);
+
         Group root = new Group();
         root.getChildren().add(cont);
-        splashScreen = new Scene(root, SIZE, SIZE, BACKGROUND);
+        root.getChildren().add(rules);
+        Scene splashScreen = new Scene(root, SIZE, SIZE, BACKGROUND);
         stage.setTitle(TITLE);
         stage.setScene(splashScreen);
         stage.show();
@@ -94,16 +107,28 @@ public class Main extends Application {
                 ex.printStackTrace();
             }
         });
-        Timeline animation = new Timeline();
+        animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
-        animation.play();
+//        animation.play();
     }
 
     private void advanceLevel(int lvl) throws FileNotFoundException {
+        animation.stop();
         gameScene = setupGame(SIZE, SIZE, BACKGROUND, lvl);
         advanceScene(gameScene);
+        ResetParams();
     }
+
+    private void ResetParams() {
+        myBouncer.setX(gameScene.getWidth() / 4 - myBouncer.getBoundsInLocal().getWidth() / 2);
+        myBouncer.setY(gameScene.getHeight() / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
+        myMover.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
+        myMover.setY(gameScene.getHeight()- MOVER_HEIGHT - 10);
+        ball_y_direction = 1;
+        ball_x_direction = 1;
+    }
+
     private void addBricks (int level) throws FileNotFoundException {
         File file = new File ("resources/lvl"+ level +".txt");
         Scanner reader = new Scanner(file);
@@ -134,6 +159,7 @@ public class Main extends Application {
 
                     temp.setBrickX(xValue);
                     temp.setBrickY(yValue + 5*rowNumber);
+                    temp.setRow(rowNumber+1);
                     root.getChildren().add(temp.getBrickImage()); //add the nodes to the group
                     brickList.add(temp);
                 }
@@ -148,6 +174,7 @@ public class Main extends Application {
     // Create the game's "scene": what shapes will be in the game and their starting properties
     private Scene setupGame (int width, int height, Paint background, int lvl) throws FileNotFoundException {
         // create one top level collection to organize the things in the scene
+
         root = new Group();
         // make some shapes and set their properties
         Image ball = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
@@ -161,16 +188,23 @@ public class Main extends Application {
         ImagePattern paddleImagePattern = new ImagePattern(paddleImage);
         myMover.setFill(paddleImagePattern);
 
+        Label levelDisp = new Label("Level: " + Integer.toString(lvl));
+        levelDisp.setLayoutY(2);
+        levelDisp.setLayoutX(2);
+
+        livesDisp = new Label(Integer.toString(currentLives));
+        livesDisp.setLayoutY(2);
+        livesDisp.setLayoutX(200);
         // order added to the group is the order in which they are drawn
         root.getChildren().add(myBouncer);
         root.getChildren().add(myMover);
         addBricks(lvl);
 
+        root.getChildren().add(levelDisp);
         // create a place to see the shapes
         Scene scene = new Scene(root, width, height, background);
         // respond to input
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        scene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
         return scene;
     }
     private boolean bricksDestroyed(){
@@ -186,12 +220,19 @@ public class Main extends Application {
     // Change properties of shapes in small ways to animate them over time
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
     private void step (double elapsedTime) throws FileNotFoundException {
+        BOUNCER_SPEED = 300;
         // update "actors" attributes
         myBouncer.setX(myBouncer.getX() + ball_x_direction*BOUNCER_SPEED * elapsedTime);
         myBouncer.setY(myBouncer.getY() + ball_y_direction*BOUNCER_SPEED * elapsedTime);
 
         // collisions from sides
         if (myBouncer.getY() <= 0){ ball_y_direction *= -1;}
+        if (myBouncer.getY()>gameScene.getHeight()){
+            currentLives--;
+            if(currentLives>0){
+                ResetParams();
+            }
+        }
         if (myBouncer.getX() + myBouncer.getBoundsInLocal().getWidth() >= gameScene.getWidth()){
             ball_x_direction *= -1;}
         if (myBouncer.getX() <= 0){ ball_x_direction *= -1;}
@@ -208,7 +249,8 @@ public class Main extends Application {
         checkBrickBallCollision();
         if(bricksDestroyed()){
             BOUNCER_SPEED = BOUNCER_SPEED/2;
-            advanceLevel(currentLevel+1);
+            currentLevel +=1;
+            advanceLevel(currentLevel);
         }
     }
 
@@ -230,6 +272,10 @@ public class Main extends Application {
 
     // What to do each time a key is pressed
     private void handleKeyInput (KeyCode code) {
+        if(code==KeyCode.SPACE){
+            ResetParams();
+            animation.play();
+        }
         if (code == KeyCode.RIGHT && !(myMover.getX() + myMover.getWidth() >= gameScene.getWidth()-12)) {
             myMover.setX(myMover.getX() + MOVER_SPEED);
         }
@@ -249,23 +295,26 @@ public class Main extends Application {
         }
         //CHEATCODE: 'R' to reset paddle and ball position
         if (code == KeyCode.R){
-            myBouncer.setX(gameScene.getWidth() / 4 - myBouncer.getBoundsInLocal().getWidth() / 2);
-            myBouncer.setY(gameScene.getHeight() / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
-            myMover.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
-            myMover.setY(gameScene.getHeight()- MOVER_HEIGHT - 10);
+            ResetParams();
             ball_y_direction = 1;
             ball_x_direction = 1;
         }
 
+        //CHEATCODE: Level Toggle: 1,2,3
+        if(code.isDigitKey()){
+            try {
+                advanceLevel(code.getCode()-48);
+            } catch (FileNotFoundException e) {
+
+                e.printStackTrace();
+            }
+        }
+        if(code==KeyCode.L){
+            currentLives++;
+        }
+
     }
 
-    // What to do each time a key is pressed
-    private void handleMouseInput (double x, double y) {
-//        if (myGrower.contains(x, y)) {
-//            myGrower.setScaleX(myGrower.getScaleX() * GROWER_RATE);
-//            myGrower.setScaleY(myGrower.getScaleY() * GROWER_RATE);
-//        }
-    }
 
     /**
      * Start the program.

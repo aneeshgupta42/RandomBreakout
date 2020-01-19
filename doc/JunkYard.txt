@@ -24,3 +24,12 @@
         //     case UP -> myMover.setY(myMover.getY() - MOVER_SPEED);
         //     case DOWN -> myMover.setY(myMover.getY() + MOVER_SPEED);
         // }
+
+//        scene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
+    // What to do each time a key is pressed
+    private void handleMouseInput (double x, double y) {
+//        if (myGrower.contains(x, y)) {
+//            myGrower.setScaleX(myGrower.getScaleX() * GROWER_RATE);
+//            myGrower.setScaleY(myGrower.getScaleY() * GROWER_RATE);
+//        }
+    }
