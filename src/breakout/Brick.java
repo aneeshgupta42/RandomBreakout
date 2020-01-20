@@ -15,8 +15,8 @@ import javafx.scene.image.ImageView;
 public class Brick {
 
     private ImageView brickImage;
-    public static int WIDTH = 65;
-    public static int HEIGHT = 30;
+    private int WIDTH = 65;
+    private int HEIGHT = 30;
     private int hitsAllowed;
     private int popped;
     private int row;
