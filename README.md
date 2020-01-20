@@ -60,6 +60,11 @@ Hours Spent: 15-18 hours
 
 1. The game window isn't maximised or minimized during play.
 2. Java13 is used.
+3. The entire `game_ag468` folder, with all of it's constituent directories and files is downloaded and used.
 
 ### Impressions
-
+- Pretty intensive, really made me evaluate if class was for me
+- You learn a lot
+- Open ended nature is enjoyable, I liked the high amount of creative liberty
+- Perhaps could be better if there is a bit of guidance on how to actually adopt good practices when you begin to code (by planning/sketching or something)
+- Know what bad practices are, but don't know how to properly, timely, and easily code beginning with good practices.
