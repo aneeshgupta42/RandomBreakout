@@ -120,7 +120,13 @@ public class Main extends Application {
         vbox.setLayoutX(90); vbox.setLayoutY(270);
         return vbox;
     }
-
+    private Rectangle generateHypno(){
+        Rectangle hypno = new Rectangle(50, 50);
+        Image hypnoImage = new Image(this.getClass().getClassLoader().getResourceAsStream("hypno.gif"));
+        ImagePattern hypnoImagePattern = new ImagePattern(hypnoImage);
+        hypno.setFill(hypnoImagePattern);
+        return hypno;
+    }
     /***
      * Starting splash screen with
      * name, instructions, start button, etc.
@@ -136,10 +142,7 @@ public class Main extends Application {
         Header.setTextFill(Color.DARKCYAN);
         Header.setLayoutX(140); Header.setLayoutY(10);
 
-        Rectangle hypno = new Rectangle(50, 50);
-        Image hypnoImage = new Image(this.getClass().getClassLoader().getResourceAsStream("hypno.gif"));
-        ImagePattern hypnoImagePattern = new ImagePattern(hypnoImage);
-        hypno.setFill(hypnoImagePattern);
+        Rectangle hypno = generateHypno();
         hypno.setLayoutX(230); hypno.setLayoutY(50);
 
         Label rules = new Label("GAME RULES\n" +
@@ -422,10 +425,7 @@ public class Main extends Application {
     private Scene EndGame(){ //We're in the endgame now
         animation.stop();
 
-        Rectangle hypno = new Rectangle(50, 50);
-        Image hypnoImage = new Image(this.getClass().getClassLoader().getResourceAsStream("hypno.gif"));
-        ImagePattern hypnoImagePattern = new ImagePattern(hypnoImage);
-        hypno.setFill(hypnoImagePattern);
+        Rectangle hypno = generateHypno();
         hypno.setLayoutX(180); hypno.setLayoutY(50);
 
         String outcome = gameLost ? "   You Lost :(" : "   You Won :)";
