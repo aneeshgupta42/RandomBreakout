@@ -51,37 +51,6 @@ public class Brick {
         this.brickImage.setFitWidth(WIDTH);
         this.brickImage.setFitHeight(HEIGHT);
     }
-//    public Brick (int hitsAllowed){
-//        String style = new String();
-//        popped = 0;
-//        powerUp = false;
-//        permanentBrick = false;
-//        switch (brickCode){
-//            case 1: {
-//                hitsAllowed = 1;
-//                style = "brick3.gif";
-//            }
-//            case 2: {
-//                hitsAllowed = 3;
-//                style = "brick5.gif";
-//            }
-//            case 3: {
-//                permanentBrick = true;
-//                style = "brick7.gif";
-//            }
-//            case 5: {
-//                hitsAllowed = 1;
-//                powerUp = true;
-//                style = "brick10.gif";
-//            }
-//        }
-//        Image brickGif = new Image(this.getClass().getClassLoader().getResourceAsStream(style));
-//        ImageView brickView = new ImageView(brickGif);
-//
-//        this.brickImage = brickView;
-//        this.brickImage.setFitWidth(WIDTH);
-//        this.brickImage.setFitHeight(HEIGHT);
-//    }
 
     public void setHEIGHT(int h)
     {

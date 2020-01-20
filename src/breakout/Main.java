@@ -38,7 +38,8 @@ public class Main extends Application {
     public static final int FRAMES_PER_SECOND = 120;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    public static final Paint BACKGROUND = Color.DARKSALMON;
+    public static final Paint BACKGROUND = Color.WHITESMOKE;
+    public static final Paint altBCKGRND = Color.SALMON;
 
     private String BOUNCER_IMAGE = "ball.gif";
     private String PADDLE_IMAGE = "paddle.gif";
@@ -46,10 +47,11 @@ public class Main extends Application {
 
     public static final int MOVER_WIDTH = 80;
     public static final int MOVER_HEIGHT = 20;
-    public static final int MOVER_SPEED = 35;
 
+    private int mover_speed = 35;
     private int ball_y_direction = 1;
     private int ball_x_direction = 1;
+
     private int fullBottomActivated = 0;
     private ArrayList<Brick> brickList;
 
@@ -58,15 +60,19 @@ public class Main extends Application {
     Timeline animation = new Timeline();
     private Scene gameScene;
     private ImageView myBouncer;
-    private Rectangle myMover;
+    private Rectangle myPaddle;
     private Group root;
     private Label livesDisp;
     private Label scoreDisp;
     private Label promptDisp;
+    private Label powerDisp;
     private int currentLevel = 1;
     private int currentLives;
     private int gameScore = 0;
+
     private boolean gameLost;
+    private boolean gameEnd;
+    private boolean randomGame;
 
 
     /**
@@ -77,23 +83,19 @@ public class Main extends Application {
         // attach scene to the stage and display it
         gameScene = setupGame(SIZE, SIZE, BACKGROUND, currentLevel);
         Button cont = new Button("Start Game");
-        cont.setLayoutX(170);
-        cont.setLayoutY(200);
+        cont.setLayoutX(170); cont.setLayoutY(200);
         cont.setOnAction(e -> advanceScene(gameScene));
-
         Label rules = new Label("RandomBreakout\n" +
                 "\t 1. Use arrow keys to move paddle to guide ball to pop bricks\n" +
                 "\t 2. You get three lives per level\n" +
                 "\t 3. There are different types of bricks in this game\n" +
                 "\t 4. In the middle of the level controls change (such as arrow keys)\n"+
                 "\t\t Adapt to this change and finish the level");
-        rules.setLayoutX(0);
-        rules.setLayoutY(80);
+        rules.setLayoutX(0); rules.setLayoutY(80);
 
-        Group root = new Group();
-        root.getChildren().add(cont);
-        root.getChildren().add(rules);
-        Scene splashScreen = new Scene(root, SIZE, SIZE, BACKGROUND);
+        Group startRoot = new Group();
+        startRoot.getChildren().addAll(cont, rules);
+        Scene splashScreen = new Scene(startRoot, SIZE, SIZE, BACKGROUND);
         stage.setTitle(TITLE);
         stage.setScene(splashScreen);
         stage.show();
@@ -120,6 +122,10 @@ public class Main extends Application {
         animation.stop();
         if(lvl>3){
             System.out.println("GAME OVER - YOU WON!!");
+            Scene theEnd;
+            theEnd = EndGame();
+            animation.stop();
+            stage.setScene(theEnd);
         }
         else {
             gameScene = setupGame(SIZE, SIZE, BACKGROUND, lvl);
@@ -131,18 +137,30 @@ public class Main extends Application {
     private void ResetParams() {
         myBouncer.setX(gameScene.getWidth() / 4 - myBouncer.getBoundsInLocal().getWidth() / 2);
         myBouncer.setY(gameScene.getHeight() / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
-        myMover.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
-        myMover.setY(gameScene.getHeight()- MOVER_HEIGHT - 10);
-        ball_y_direction = 1;
-        ball_x_direction = 1;
+        myPaddle.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
+        myPaddle.setY(gameScene.getHeight()- MOVER_HEIGHT - 10);
+        ball_y_direction = 1;ball_x_direction = 1;
+        mover_speed = 35;
+        if(currentLevel==3){
+            BOUNCER_SPEED = 330;
+            myPaddle.setY(gameScene.getHeight()- MOVER_HEIGHT - 40);
+        }
     }
+    private Brick selectBrick(int code){
+        Brick retBrick = new Brick("", 1 ,0, false, false);
+        if(code == 1){retBrick = new Brick("brick3.gif", 1, 0, false, false);}
+        else if(code == 2){retBrick = new Brick("brick5.gif", 3,0,false, false);}
+        else if(code == 3){retBrick = new Brick("brick7.gif", 1,0,false, true);}
+        else if(code == 4){retBrick = new Brick("brick2.gif", 1, 0, false, false, true);}
+        else if(code == 5){retBrick = new Brick("brick10.gif", 1,0,true, false);}
 
+        return retBrick;
+    }
     private void addBricks (int level) throws FileNotFoundException {
         File file = new File ("resources/lvl"+ level +".txt");
         Scanner reader = new Scanner(file);
 
-        int initXValue = 5;
-        int initYValue = 40;
+        int initXValue = 5; int initYValue = 40;
         int[] heightArray = {30, 20, 18};
 
         brickList = new ArrayList<>();
@@ -150,8 +168,7 @@ public class Main extends Application {
         int rowNumber = 0;
         while(reader.hasNextLine()){
             String row = reader.nextLine();
-            String [] brickHits = row.split(" ");
-
+            String [] brickHits = row.split(" ");//Split the line on spaces to get the brick config
             int xValue = initXValue;
             int yIncr = 30;
             for (int i = 0; i< brickHits.length; i++){
@@ -159,14 +176,8 @@ public class Main extends Application {
                 Brick temp = new Brick("", 0,0, false, false );
                 temp.setHEIGHT(heightArray[level-1]);
                 if(code != 0){
-                        if(code == 1){temp = new Brick("brick3.gif", 1, 0, false, false);}
-                        else if(code == 2){temp = new Brick("brick5.gif", 3,0,false, false);}
-                        else if(code == 3){temp = new Brick("brick7.gif", 1,0,false, true);}
-                        else if(code == 4){temp = new Brick("brick2.gif", 1, 0, false, false, true);}
-                        else if(code == 5){temp = new Brick("brick10.gif", 1,0,true, false);}
-
-                    temp.setBrickX(xValue);
-                    temp.setBrickY(yValue + 5*rowNumber);
+                    temp = selectBrick(code);
+                    temp.setBrickX(xValue);temp.setBrickY(yValue + 5*rowNumber);
                     temp.setRow(rowNumber+1);
                     root.getChildren().add(temp.getBrickImage()); //add the nodes to the group
                     brickList.add(temp);
@@ -179,52 +190,80 @@ public class Main extends Application {
         }
         return;
     }
-    // Create the game's "scene": what shapes will be in the game and their starting properties
-    private Scene setupGame (int width, int height, Paint background, int lvl) throws FileNotFoundException {
-        // create one top level collection to organize the things in the scene
-        gameLost = false;
-        root = new Group();
-        // make some shapes and set their properties
+    private void setBallPaddle(int width, int height){
         Image ball = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         myBouncer = new ImageView(ball);
         // x and y represent the top left corner, so center it in window
         myBouncer.setX(width / 4 - myBouncer.getBoundsInLocal().getWidth() / 2);
         myBouncer.setY(height / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
-
-        myMover = new Rectangle(width / 2 - MOVER_WIDTH / 2, height - MOVER_HEIGHT - 10, MOVER_WIDTH, MOVER_HEIGHT);
+        BOUNCER_SPEED = 200;
+        myPaddle = new Rectangle(width / 2 - MOVER_WIDTH / 2, height - MOVER_HEIGHT - 10, MOVER_WIDTH, MOVER_HEIGHT);
         Image paddleImage = new Image(this.getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE));
+        if(currentLevel==3){
+            BOUNCER_SPEED = 330;
+            myPaddle.setY(gameScene.getHeight()- MOVER_HEIGHT - 40);
+        }
         ImagePattern paddleImagePattern = new ImagePattern(paddleImage);
-        myMover.setFill(paddleImagePattern);
+        myPaddle.setFill(paddleImagePattern);
+    }
 
-        Label levelDisp = new Label("Level: " + lvl);
-        levelDisp.setFont(new Font("Georgia", 12));
-        levelDisp.setLayoutY(2);
-        levelDisp.setLayoutX(2);
-
+    private void makeDynamicDisplays(){
         currentLives = 3;//reset lives for level
         livesDisp = new Label("Lives = " + currentLives);
-        livesDisp.setLayoutY(2);
-        livesDisp.setLayoutX(180);
+        livesDisp.setLayoutY(2); livesDisp.setLayoutX(90);
         livesDisp.setFont(new Font("Georgia", 12));
 
         scoreDisp = new Label("Score = " + gameScore);
-        scoreDisp.setLayoutY(2);
-        scoreDisp.setLayoutX(340);
+        scoreDisp.setLayoutY(2); scoreDisp.setLayoutX(340);
         livesDisp.setFont(new Font("Georgia", 12));
-        // order added to the group is the order in which they are drawn
-        root.getChildren().addAll(myBouncer, myMover);
-        addBricks(lvl);
+
+        powerDisp = new Label("POWERUP = ");
+        powerDisp.setLayoutY(2); powerDisp.setLayoutX(170);
+        powerDisp.setFont(new Font("Georgia", 13));
+        powerDisp.setTextFill(Color.DARKRED);
+        powerDisp.setVisible(false);
+
         promptDisp = new Label("PRESS SPACEBAR TO START...");
-        promptDisp.setLayoutY(160);
+        promptDisp.setLayoutY(240);
         promptDisp.setLayoutX(80);
         promptDisp.setFont(new Font("Lucida", 20));
-        root.getChildren().addAll(levelDisp, livesDisp, scoreDisp,promptDisp);
+    }
+    // Create the game's "scene": what shapes will be in the game and their starting properties
+    private Scene setupGame (int width, int height, Paint background, int lvl) throws FileNotFoundException {
+
+        // create one top level collection to organize the things in the scene
+        gameLost = false; gameEnd = false; randomGame = false;
+        root = new Group();
+        // make some shapes and set their properties
+        setBallPaddle(width, height);
+        // make the static level label (doesn't change within a level)
+        Label levelDisp = new Label("Level: " + lvl);
+        levelDisp.setFont(new Font("Georgia", 12));
+        levelDisp.setLayoutY(2); levelDisp.setLayoutX(2);
+        //make the dynamic labels (change within a level)
+        makeDynamicDisplays();
+        // order added to the group is the order in which they are drawn
+        root.getChildren().addAll(myBouncer, myPaddle);
+        addBricks(lvl);
+        root.getChildren().addAll(levelDisp, livesDisp, scoreDisp,promptDisp, powerDisp);
         // create a place to see the shapes
         Scene scene = new Scene(root, width, height, background);
-        // respond to input
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode())); // respond to input
         return scene;
     }
+
+    private Scene EndGame(){//We're in the endgame now
+        Group endRoot = new Group();
+        Label endDisp = new Label("GAME OVER");
+        endDisp.setFont(new Font("Cambria", 25));
+        endDisp.setLayoutY(180);
+        endDisp.setLayoutX(130);
+        animation.stop();
+        endRoot.getChildren().add(endDisp);
+        Scene endScene = new Scene(endRoot,SIZE, SIZE, BACKGROUND);
+        return endScene;
+    }
+
     private boolean bricksDestroyed(){
         int count = 0;
         for (Brick brick : brickList) {
@@ -235,14 +274,33 @@ public class Main extends Application {
         return (count==0);
     }
 
+    private boolean randomState(){
+        int count = 0;
+        for (Brick brick : brickList) {
+            if (!brick.isPermanentBrick()) {
+                count++;
+            }
+        }
+        return (count==3); // at 3 bricks randomize
+    }
+
+    private void ballMotion(double elapsedTime){
+        myBouncer.setX(myBouncer.getX() + ball_x_direction*BOUNCER_SPEED * elapsedTime);
+        myBouncer.setY(myBouncer.getY() + ball_y_direction*BOUNCER_SPEED * elapsedTime);
+    }
+
+    private void checkBallWallCollisions(){
+
+    }
     // Change properties of shapes in small ways to animate them over time
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
     private void step (double elapsedTime) throws FileNotFoundException {
-        BOUNCER_SPEED = 300;
-        // update "actors" attributes
-        myBouncer.setX(myBouncer.getX() + ball_x_direction*BOUNCER_SPEED * elapsedTime);
-        myBouncer.setY(myBouncer.getY() + ball_y_direction*BOUNCER_SPEED * elapsedTime);
 
+        if(randomState()) {randomizeGame();}
+        // update "actors" attributes
+        ballMotion(elapsedTime);
+
+        checkBallWallCollisions();
         // collisions from sides
         if (myBouncer.getY() <= 0){ ball_y_direction *= -1;}
         if (myBouncer.getY()>gameScene.getHeight()){
@@ -256,9 +314,11 @@ public class Main extends Application {
             if(currentLives==0){
                 animation.stop();
                 promptDisp.setText("YOU LOST :( ...");
-
                 gameLost = true;
                 promptDisp.setVisible(true);
+                Scene theEnd = EndGame();
+                this.gameScene = theEnd;
+                stage.setScene(gameScene);
             }
         }
         if (myBouncer.getX() + myBouncer.getBoundsInLocal().getWidth() >= gameScene.getWidth()){
@@ -267,10 +327,9 @@ public class Main extends Application {
 
 
         //Collisions with paddle 
-        if(myMover.getBoundsInParent().intersects(myBouncer.getBoundsInParent())){
-            if (myBouncer.getY() + myBouncer.getBoundsInLocal().getHeight() - 4 > myMover.getY()){
-                ball_x_direction *= -1;
-                ball_y_direction *= -1;
+        if(myPaddle.getBoundsInParent().intersects(myBouncer.getBoundsInParent())){
+            if (myBouncer.getY() + myBouncer.getBoundsInLocal().getHeight() - 4 > myPaddle.getY()){
+                ball_x_direction *= -1; ball_y_direction *= -1;
             }
             ball_y_direction = -1;
         }
@@ -281,21 +340,41 @@ public class Main extends Application {
             advanceLevel(currentLevel);
         }
     }
+
+    private void randomizeGame(){
+        gameScene.setFill(altBCKGRND);
+        BOUNCER_SPEED = 200;
+        mover_speed = 40;
+        randomGame = true;
+    }
+
+    private void randomControl(KeyCode code){
+        if(randomGame && code == KeyCode.RIGHT){
+            myPaddle.setX(myPaddle.getX() - mover_speed);
+        }
+        else if(randomGame && code == KeyCode.LEFT){
+            myPaddle.setX(myPaddle.getX() + mover_speed);
+        }
+        if(myPaddle.getX()>=gameScene.getWidth()){ //wrapping it around
+            myPaddle.setX(3);
+        }
+        if(myPaddle.getX()+myPaddle.getWidth()<=3){
+            myPaddle.setX(gameScene.getWidth()-myPaddle.getWidth()-3);
+        }
+    }
+
     private void addHydraBricks(int x, int y){
         Brick child1 = new Brick("brick1.gif", 1, 0, false, false);
         Brick child2 = new Brick("brick1.gif", 1, 0, false, false);
-        child1.setWIDTH(30);
-        child1.setHEIGHT(18);
-        child1.setRow(3);
-        child2.setRow(3);
-        child2.setWIDTH(30);
-        child1.setHEIGHT(18);
-        child1.setBrickX(x); child1.setBrickY(y);
-        child2.setBrickX(x+ child1.getWidth()+5); child2.setBrickY(y);
+        child1.setWIDTH(30);child1.setHEIGHT(18);
+        child2.setWIDTH(30); child2.setHEIGHT(18); //split into half
+        child1.setBrickX(x); child1.setBrickY(y); //set location of child1
+        child2.setBrickX(x+ child1.getWidth()+5); child2.setBrickY(y); //set location of child2
+        child1.setRow(3);child2.setRow(3); //allow it to be hitten by the P cheatcode
         root.getChildren().addAll(child1.getBrickImage(), child2.getBrickImage());
-        brickList.add(child1);
-        brickList.add(child2);
+        brickList.add(child1);brickList.add(child2);
     }
+
     private void activatePowerUp(){
         Random random = new Random();
         int whichPowerUp = random.nextInt(3)+1;
@@ -304,27 +383,45 @@ public class Main extends Application {
             livesDisp.setText("Lives : " + currentLives);
         }
         else if(whichPowerUp==2){//ELONGATE PADDLE
-
-
+            myPaddle.setWidth(myPaddle.getWidth()+20);
+            myPaddle.setX(myPaddle.getX()-10);
+            powerDisp.setText("POWERUP: STRETCH");powerDisp.setVisible(true);
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            powerDisp.setVisible(false);
+                            myPaddle.setWidth(MOVER_WIDTH);
+                        }
+                    },10000);
         }
-
+        else if(whichPowerUp==3) { //Speed++
+            powerDisp.setText("POWERUP: SWIFT"); powerDisp.setVisible(true);
+            mover_speed += 15;
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            powerDisp.setVisible(false);
+                            mover_speed = 35;
+                        }
+                    }, 10000);
+        }
     }
+
     private void checkBrickBallCollision(){
         for(int i = 0; i<brickList.size(); i++) {
             Brick currBrick = brickList.get(i);
             ImageView tempImage = currBrick.getBrickImage();
             if (tempImage.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
                 if((tempImage.getY()<=myBouncer.getY()+myBouncer.getBoundsInLocal().getHeight()/2) && (myBouncer.getY()+myBouncer.getBoundsInLocal().getHeight()/2 <=tempImage.getY()+tempImage.getFitHeight())){
-//                    ball_y_direction*=-1;
-                    ball_x_direction*=-1;
+                    ball_x_direction*=-1;//sideways hit
                 }
-                else{
-                ball_y_direction *= -1;}
+                else{ ball_y_direction *= -1;}
                 currBrick.decreaseHits();
                 if(currBrick.getHitsAllowed() == 0 && !currBrick.isPermanentBrick()) {
-                    if(currBrick.isHydra()){
-                        addHydraBricks((int)tempImage.getX(), (int)tempImage.getY());
-                    }
+                    if(currBrick.isHydra()) addHydraBricks((int)tempImage.getX(), (int)tempImage.getY());
+                    if(currBrick.isPowerUp()) activatePowerUp();
                     brickList.remove(brickList.get(i));
                     root.getChildren().remove(tempImage);
                     gameScore++;
@@ -342,21 +439,24 @@ public class Main extends Application {
             promptDisp.setVisible(false);
             animation.play();
         }
-        if (code == KeyCode.RIGHT && !(myMover.getX() + myMover.getWidth() >= gameScene.getWidth()-12)) {
-            myMover.setX(myMover.getX() + MOVER_SPEED);
+        if (!randomGame && code == KeyCode.RIGHT && !(myPaddle.getX() + myPaddle.getWidth() >= gameScene.getWidth()-12)) {
+            myPaddle.setX(myPaddle.getX() + mover_speed);
         }
-        else if (code == KeyCode.LEFT && !(myMover.getX() <= 12)) {
-            myMover.setX(myMover.getX() - MOVER_SPEED);
+        else if (!randomGame && code == KeyCode.LEFT && !(myPaddle.getX() <= 12)) {
+            myPaddle.setX(myPaddle.getX() - mover_speed);
         }
+
+        if (randomGame) randomControl(code);
+
         //CHEATCODE: 'I' to elongate paddle fully
         if (code == KeyCode.I && fullBottomActivated==0){
-            myMover.setWidth(gameScene.getWidth());
-            myMover.setX(2);
+            myPaddle.setWidth(gameScene.getWidth());
+            myPaddle.setX(2);
             fullBottomActivated = 1;
         }
         else if (code == KeyCode.I && fullBottomActivated==1){
-            myMover.setWidth(MOVER_WIDTH);
-            myMover.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
+            myPaddle.setWidth(MOVER_WIDTH);
+            myPaddle.setX(gameScene.getWidth()/2 - MOVER_WIDTH/2);
             fullBottomActivated = 0;
         }
         //CHEATCODE: 'R' to reset paddle and ball position
@@ -371,13 +471,16 @@ public class Main extends Application {
         //CHEATCODE: Level Toggle: 1,2,3
         if(code.isDigitKey()){
             try {
-                if(code.getCode()-48>3){
+                if(code.getCode()-48>=3){
                     advanceLevel(3);
                     currentLevel =3;
+                    BOUNCER_SPEED = 330;
+                    myPaddle.setY(gameScene.getHeight()- MOVER_HEIGHT - 40);
                 }
                 else{
                     advanceLevel(code.getCode()-48);
                     currentLevel = code.getCode()-48;
+                    ResetParams();
                 }
             } catch (FileNotFoundException e) {
 
