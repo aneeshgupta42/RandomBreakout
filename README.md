@@ -4,6 +4,7 @@ game
 This project implements the game of Breakout.
 
 Name: Aneesh Gupta
+
 NetID: ag468
 
 ### Timeline
