@@ -67,6 +67,11 @@ Hours Spent: ~20 hours
 5. Ball seems to run with stops at times, but works fine on other computers.
 6. Implementing collision logic, dealing with Public static vs Private instance variables was interesting.
 7. JavaFX does have some display problems (like for example only a part of the string is displayed in a label, even with correct code).
+8. Paddle has following properties
+   1. Corner reflect is different, ball retraces path
+   2. Paddle speed changes with powerUp
+   3. Paddle length changes with powerUp/cheatcode
+   4. Paddle can wrap around screen in random mode.
 
 ### Impressions
 - Pretty intensive, really made me evaluate if class was for me
