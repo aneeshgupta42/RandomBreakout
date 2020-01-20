@@ -586,6 +586,7 @@ public class Main extends Application {
                     public void run() {
                         powerDisp.setVisible(false);
                         myPaddle.setWidth(tempWidth);
+                        return;
                     }
                 },10000);
     }
@@ -602,6 +603,7 @@ public class Main extends Application {
                     public void run() {
                         powerDisp.setVisible(false);
                         mover_speed = 35;
+                        return;
                     }
                 }, 10000);
     }
