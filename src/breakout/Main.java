@@ -184,8 +184,8 @@ public class Main extends Application {
      * Used for advancing levels.
      * If Level>3 then takes to End Screen
      * Otherwise calls SetupLevel with reqd level
-     * @param lvl
-     * @throws FileNotFoundException
+     * @param lvl the current level of the game
+     * @throws FileNotFoundException if file is not found
      */
     private void advanceLevel(int lvl) throws FileNotFoundException {
         animation.stop();
@@ -225,7 +225,7 @@ public class Main extends Application {
      * intialized with correct parameters
      * such as Image, hits etc.
      * Called in addBricks
-     * @param code
+     * @param code the Brick identifying code
      * @return Brick instance
      */
     private Brick selectBrick(int code){
@@ -242,7 +242,7 @@ public class Main extends Application {
     /***
      * Adds the Bricks to the screen.
      * Reads in configuration from txt file
-     * @param level
+     * @param level the level of the game (to decide brick config)
      * @throws FileNotFoundException
      */
     private void addBricks (int level) throws FileNotFoundException {
@@ -283,8 +283,8 @@ public class Main extends Application {
      * Adds the children of a Hydra brick
      * to the screen, by adding to Bricks
      * Param: coordinate where children should be added
-     * @param x
-     * @param y
+     * @param x: x coord of parent brick
+     * @param y: y coord of parent brick
      */
     private void addHydraBricks(int x, int y){
         Brick child1 = new Brick("brick1.gif", 1, 0, false, false);
@@ -352,12 +352,12 @@ public class Main extends Application {
     /***
      * Intializes the scene for a particular level,
      * with all desired objects and parameters
-     * @param width
-     * @param height
-     * @param background
-     * @param lvl
+     * @param width: width of screen
+     * @param height: height of screen
+     * @param background: background image/color
+     * @param lvl: current game level
      * @return Scene instance for a particular level
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if file is not found
      */
     private Scene setupLevel(int width, int height, Paint background, int lvl) throws FileNotFoundException {
 
@@ -382,7 +382,7 @@ public class Main extends Application {
     /***
      * Generates and returns a Button that
      * allows presser to replay the game
-     * @return
+     * @return a button object (Replay button)
      */
     private Button replayButton(){
         Button cont = new Button("Replay Game");
@@ -404,7 +404,7 @@ public class Main extends Application {
      * Generates a credit label
      * crediting the creator of the fame
      * @author Aneesh
-     * @return
+     * @return a Label with credits
      */
     private Label creditLabel(){
         Label credit = new Label("Made with <3 by Aneesh Gupta");
@@ -475,8 +475,8 @@ public class Main extends Application {
      * responsible for motion,
      * and iterative checking and interaction
      * of ball and other objects
-     * @param elapsedTime
-     * @throws FileNotFoundException
+     * @param elapsedTime timeline parameter
+     * @throws FileNotFoundException when File not found
      */
     // Change properties of shapes in small ways to animate them over time
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
@@ -501,7 +501,7 @@ public class Main extends Application {
 
     /***
      * moves the ball by ++ X,Y position
-     * @param elapsedTime
+     * @param elapsedTime timeline parameter
      */
     private void ballMotion(double elapsedTime){
         myBouncer.setX(myBouncer.getX() + ball_x_direction*BOUNCER_SPEED * elapsedTime);
@@ -639,7 +639,7 @@ public class Main extends Application {
 
     /***
      * Key control for random part of game
-     * @param code
+     * @param code the keyboard entry
      */
     private void randomControl(KeyCode code){
         if(randomGame && code == KeyCode.RIGHT){
@@ -658,7 +658,7 @@ public class Main extends Application {
 
     /***
      * Key controls for regular gameplay
-     * @param code
+     * @param code the keyboard entry
      */
     private void regularControl(KeyCode code){
         if (code == KeyCode.RIGHT && !(myPaddle.getX() + myPaddle.getWidth() >= gameScene.getWidth()-12)) {
@@ -671,7 +671,7 @@ public class Main extends Application {
 
     /***
      * Handling keyboard inputs
-     * @param code
+     * @param code the keyboard entry
      */
     // What to do each time a key is pressed
     private void handleKeyInput (KeyCode code) {
@@ -688,7 +688,7 @@ public class Main extends Application {
     /***
      * Elongates paddle to fit screen
      * and returns to original size if pressed again
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkElongate(KeyCode code){
         //CHEATCODE: 'I' to elongate paddle fully
@@ -706,7 +706,7 @@ public class Main extends Application {
 
     /***
      * Resets the ball and paddle to original position
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkReset(KeyCode code){
         //CHEATCODE: 'R' to reset paddle and ball position
@@ -721,7 +721,7 @@ public class Main extends Application {
 
     /***
      * toggle between levels 1,2 and 3
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkToggle(KeyCode code){
         //CHEATCODE: Level Toggle: 1,2,3
@@ -747,7 +747,7 @@ public class Main extends Application {
 
     /***
      * add Lives to the users game
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkLivesAdd(KeyCode code){
         //CHEATCODE: Add lives
@@ -759,7 +759,7 @@ public class Main extends Application {
 
     /***
      * Pops random bricks from the first 3 rows
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkPopper(KeyCode code){
         //CHEATCODE: Randomly Pops some of bricks in the first three rows
@@ -784,7 +784,7 @@ public class Main extends Application {
     /***
      * checks and executes the above cheatcodes
      * on the basis of key pressed
-     * @param code
+     * @param code the keyboard entry
      */
     private void checkCheatCode(KeyCode code){
         checkElongate(code); //elongate paddle to fit screen
