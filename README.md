@@ -64,6 +64,9 @@ Hours Spent: ~20 hours
 2. Java13 is used.
 3. The entire `game_ag468` folder, with all of it's constituent directories and files is downloaded and used.
 4. `game_ag468/src/breakout/Main.java` is the file run.
+5. Ball seems to run with stops at times, but works fine on other computers.
+6. Implementing collision logic, dealing with Public static vs Private instance variables was interesting.
+7. JavaFX does have some display problems (like for example only a part of the string is displayed in a label, even with correct code).
 
 ### Impressions
 - Pretty intensive, really made me evaluate if class was for me
