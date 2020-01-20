@@ -4,6 +4,7 @@ game
 This project implements the game of Breakout.
 
 Name: Aneesh Gupta
+NetID: ag468
 
 ### Timeline
 
@@ -11,7 +12,7 @@ Start Date: 01/12/2019
 
 Finish Date: 01/19/2020
 
-Hours Spent: 15-18 hours
+Hours Spent: ~20 hours
 
 ### Resources Used
 * JavaFX tutorial (TutorialsPoint)
@@ -61,10 +62,11 @@ Hours Spent: 15-18 hours
 1. The game window isn't maximised or minimized during play.
 2. Java13 is used.
 3. The entire `game_ag468` folder, with all of it's constituent directories and files is downloaded and used.
+4. `game_ag468/src/breakout/Main.java` is the file run.
 
 ### Impressions
 - Pretty intensive, really made me evaluate if class was for me
-- You learn a lot
-- Open ended nature is enjoyable, I liked the high amount of creative liberty
+- You learn a lot, and practically revise a lot of Java programming
+- Open ended nature is really enjoyable, I loved the high amount of creative liberty
 - Perhaps could be better if there is a bit of guidance on how to actually adopt good practices when you begin to code (by planning/sketching or something)
 - Know what bad practices are, but don't know how to properly, timely, and easily code beginning with good practices.
