@@ -47,12 +47,11 @@ public class Main extends Application {
 
     public static final int MOVER_WIDTH = 80;
     public static final int MOVER_HEIGHT = 20;
-
     private int mover_speed = 35;
     private int ball_y_direction = 1;
     private int ball_x_direction = 1;
 
-    private int fullBottomActivated = 0;
+
     private ArrayList<Brick> brickList;
 
     // some things needed to remember during game
@@ -62,18 +61,20 @@ public class Main extends Application {
     private ImageView myBouncer;
     private Rectangle myPaddle;
     private Group root;
+
     private Label livesDisp;
     private Label scoreDisp;
     private Label promptDisp;
     private Label powerDisp;
+
     private int currentLevel = 1;
     private int currentLives;
     private int gameScore = 0;
+    private int fullBottomActivated = 0;
 
     private boolean gameLost;
     private boolean gameEnd;
     private boolean randomGame;
-
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -82,10 +83,24 @@ public class Main extends Application {
     public void start (Stage stage) throws FileNotFoundException {
         // attach scene to the stage and display it
         gameScene = setupGame(SIZE, SIZE, BACKGROUND, currentLevel);
+        Scene startSplash = startScreen();
+        stage.setTitle(TITLE);
+        stage.setScene(startSplash);
+        stage.show();
+        this.stage = stage;
+    }
+
+    public Scene startScreen(){
         Button cont = new Button("Start Game");
         cont.setLayoutX(170); cont.setLayoutY(200);
         cont.setOnAction(e -> advanceScene(gameScene));
-        Label rules = new Label("RandomBreakout\n" +
+
+        Label Header = new Label("?Random Breakout¿");
+        Header.setFont(new Font("Garamond", 30));
+        Header.setTextFill(Color.DARKCYAN);
+        Header.setLayoutX(140); Header.setLayoutY(10);
+
+        Label rules = new Label("Rules\n" +
                 "\t 1. Use arrow keys to move paddle to guide ball to pop bricks\n" +
                 "\t 2. You get three lives per level\n" +
                 "\t 3. There are different types of bricks in this game\n" +
@@ -94,12 +109,8 @@ public class Main extends Application {
         rules.setLayoutX(0); rules.setLayoutY(80);
 
         Group startRoot = new Group();
-        startRoot.getChildren().addAll(cont, rules);
-        Scene splashScreen = new Scene(startRoot, SIZE, SIZE, BACKGROUND);
-        stage.setTitle(TITLE);
-        stage.setScene(splashScreen);
-        stage.show();
-        this.stage = stage;
+        startRoot.getChildren().addAll(Header, rules, cont);
+        return new Scene(startRoot, SIZE+100, SIZE+100, BACKGROUND);
     }
 
     private void advanceScene(Scene nextScene){
@@ -196,7 +207,7 @@ public class Main extends Application {
         // x and y represent the top left corner, so center it in window
         myBouncer.setX(width / 4 - myBouncer.getBoundsInLocal().getWidth() / 2);
         myBouncer.setY(height / 2 - myBouncer.getBoundsInLocal().getHeight() / 2);
-        BOUNCER_SPEED = 200;
+        BOUNCER_SPEED = 250;
         myPaddle = new Rectangle(width / 2 - MOVER_WIDTH / 2, height - MOVER_HEIGHT - 10, MOVER_WIDTH, MOVER_HEIGHT);
         Image paddleImage = new Image(this.getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE));
         if(currentLevel==3){
@@ -290,50 +301,50 @@ public class Main extends Application {
     }
 
     private void checkBallWallCollisions(){
-
-    }
-    // Change properties of shapes in small ways to animate them over time
-    // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
-    private void step (double elapsedTime) throws FileNotFoundException {
-
-        if(randomState()) {randomizeGame();}
-        // update "actors" attributes
-        ballMotion(elapsedTime);
-
-        checkBallWallCollisions();
-        // collisions from sides
-        if (myBouncer.getY() <= 0){ ball_y_direction *= -1;}
+        if (myBouncer.getY() <= 0) ball_y_direction *= -1;
         if (myBouncer.getY()>gameScene.getHeight()){
             currentLives--;
             livesDisp.setText("Lives = " + currentLives);
-            if(currentLives>0){
+            if(currentLives>0){ //gone out, so reset
                 animation.stop();
                 promptDisp.setVisible(true);
                 ResetParams();
             }
-            if(currentLives==0){
+            if(currentLives==0){//game over
                 animation.stop();
-                promptDisp.setText("YOU LOST :( ...");
+                promptDisp.setText("YOU LOST :( ...");promptDisp.setVisible(true);
                 gameLost = true;
-                promptDisp.setVisible(true);
-                Scene theEnd = EndGame();
-                this.gameScene = theEnd;
+                this.gameScene = EndGame();
                 stage.setScene(gameScene);
             }
         }
-        if (myBouncer.getX() + myBouncer.getBoundsInLocal().getWidth() >= gameScene.getWidth()){
-            ball_x_direction *= -1;}
-        if (myBouncer.getX() <= 0){ ball_x_direction *= -1;}
+        if (myBouncer.getX() + myBouncer.getBoundsInLocal().getWidth() >= gameScene.getWidth()) ball_x_direction *= -1;
+        if (myBouncer.getX() <= 0) ball_x_direction *= -1;
+    }
 
-
-        //Collisions with paddle 
+    private void checkPaddleBallCollisions(){
         if(myPaddle.getBoundsInParent().intersects(myBouncer.getBoundsInParent())){
             if (myBouncer.getY() + myBouncer.getBoundsInLocal().getHeight() - 4 > myPaddle.getY()){
                 ball_x_direction *= -1; ball_y_direction *= -1;
             }
             ball_y_direction = -1;
         }
+    }
+
+    // Change properties of shapes in small ways to animate them over time
+    // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
+    private void step (double elapsedTime) throws FileNotFoundException {
+        //if it's time to shake things up, do it
+        if(randomState()) randomizeGame();
+        // update "actors" attributes
+        ballMotion(elapsedTime);
+        //Collisions from sidewalls
+        checkBallWallCollisions();
+        //Collisions with paddle
+        checkPaddleBallCollisions();
+        //Collisions with bricks
         checkBrickBallCollision();
+        //Advance to next?
         if(bricksDestroyed()){
             BOUNCER_SPEED = BOUNCER_SPEED/2;
             currentLevel +=1;
@@ -375,6 +386,31 @@ public class Main extends Application {
         brickList.add(child1);brickList.add(child2);
     }
 
+    private void elongatePower(){
+        myPaddle.setWidth(myPaddle.getWidth()+20);
+        myPaddle.setX(myPaddle.getX()-10);
+        powerDisp.setText("POWERUP: STRETCH");powerDisp.setVisible(true);
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        powerDisp.setVisible(false);
+                        myPaddle.setWidth(MOVER_WIDTH);
+                    }
+                },10000);
+    }
+    private void speedPower(){
+        powerDisp.setText("POWERUP: SWIFT"); powerDisp.setVisible(true);
+        mover_speed += 20;
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        powerDisp.setVisible(false);
+                        mover_speed = 35;
+                    }
+                }, 10000);
+    }
     private void activatePowerUp(){
         Random random = new Random();
         int whichPowerUp = random.nextInt(3)+1;
@@ -383,29 +419,10 @@ public class Main extends Application {
             livesDisp.setText("Lives : " + currentLives);
         }
         else if(whichPowerUp==2){//ELONGATE PADDLE
-            myPaddle.setWidth(myPaddle.getWidth()+20);
-            myPaddle.setX(myPaddle.getX()-10);
-            powerDisp.setText("POWERUP: STRETCH");powerDisp.setVisible(true);
-            new java.util.Timer().schedule(
-                    new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                            powerDisp.setVisible(false);
-                            myPaddle.setWidth(MOVER_WIDTH);
-                        }
-                    },10000);
+            elongatePower();
         }
         else if(whichPowerUp==3) { //Speed++
-            powerDisp.setText("POWERUP: SWIFT"); powerDisp.setVisible(true);
-            mover_speed += 15;
-            new java.util.Timer().schedule(
-                    new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                            powerDisp.setVisible(false);
-                            mover_speed = 35;
-                        }
-                    }, 10000);
+            speedPower();
         }
     }
 
@@ -432,6 +449,14 @@ public class Main extends Application {
         }
     }
 
+    private void regularControl(KeyCode code){
+        if (code == KeyCode.RIGHT && !(myPaddle.getX() + myPaddle.getWidth() >= gameScene.getWidth()-12)) {
+            myPaddle.setX(myPaddle.getX() + mover_speed);
+        }
+        else if (code == KeyCode.LEFT && !(myPaddle.getX() <= 12)) {
+            myPaddle.setX(myPaddle.getX() - mover_speed);
+        }
+    }
     // What to do each time a key is pressed
     private void handleKeyInput (KeyCode code) {
         if(code==KeyCode.SPACE && !gameLost){
@@ -439,15 +464,12 @@ public class Main extends Application {
             promptDisp.setVisible(false);
             animation.play();
         }
-        if (!randomGame && code == KeyCode.RIGHT && !(myPaddle.getX() + myPaddle.getWidth() >= gameScene.getWidth()-12)) {
-            myPaddle.setX(myPaddle.getX() + mover_speed);
-        }
-        else if (!randomGame && code == KeyCode.LEFT && !(myPaddle.getX() <= 12)) {
-            myPaddle.setX(myPaddle.getX() - mover_speed);
-        }
+        if(!randomGame) regularControl(code);
+        else if (randomGame) randomControl(code);
+        checkCheatCode(code);
 
-        if (randomGame) randomControl(code);
-
+    }
+    private void checkCheatCode(KeyCode code){
         //CHEATCODE: 'I' to elongate paddle fully
         if (code == KeyCode.I && fullBottomActivated==0){
             myPaddle.setWidth(gameScene.getWidth());
@@ -510,7 +532,6 @@ public class Main extends Application {
                 }
             }
         }
-
     }
 
 
