@@ -36,8 +36,8 @@ public class Brick {
         this.brickImage =  new ImageView(brickGif);
         this.brickImage.setFitWidth(WIDTH);
         this.brickImage.setFitHeight(HEIGHT);
-
     }
+
     public Brick (String gif_string, int hits, int pop, boolean power, boolean perm, boolean hydra){
         this.hitsAllowed = hits;
         this.popped = pop;
@@ -93,11 +93,19 @@ public class Brick {
     public boolean isPermanentBrick(){
         return this.permanentBrick;
     }
-    public boolean isHydra(){ return this.isHydra;}
+    public boolean isHydra(){
+        return this.isHydra;
+    }
 
-    public void setBrickX(double x) {this.brickImage.setX(x);}
-    public void setBrickY(double y) {this.brickImage.setY(y);}
-    public void setRow(int x){ this.row = x;}
+    public void setBrickX(double x) {
+        this.brickImage.setX(x);
+    }
+    public void setBrickY(double y) {
+        this.brickImage.setY(y);
+    }
+    public void setRow(int x){
+        this.row = x;
+    }
 
     public int getRow(){
         return this.row;

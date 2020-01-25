@@ -83,91 +83,52 @@ public class Main extends Application {
     public void start (Stage stage) throws FileNotFoundException {
         // attach scene to the stage and display it
         gameScene = setupLevel(SIZE, SIZE, BACKGROUND, currentLevel);
-        Scene startSplash = startScreen();
+        StartScreen startScreen = new StartScreen(this);
+        Scene startSplash = startScreen.getStartScene();
         stage.setTitle(TITLE);
         stage.setScene(startSplash);
         stage.show();
         this.stage = stage;
     }
 
-    /***
-     * For the start screen
-     * @return VBox with Bricks-qualities key
-     */
-    private VBox GetBricksKey(){
-        Image regular = new Image(this.getClass().getClassLoader().getResourceAsStream("brick3.gif"));
-        Label reg = new Label("Regular Brick - 1 Hit");
-        reg.setGraphic(new ImageView(regular));
-
-        Image hard = new Image(this.getClass().getClassLoader().getResourceAsStream("brick5.gif"));
-        Label h = new Label("Hard Brick - 2+ Hits");
-        h.setGraphic(new ImageView(hard));
-
-        Image permanent = new Image(this.getClass().getClassLoader().getResourceAsStream("brick7.gif"));
-        Label perm = new Label("Permanent Brick - Infinite hits");
-        perm.setGraphic(new ImageView(permanent));
-
-        Image power = new Image(this.getClass().getClassLoader().getResourceAsStream("brick10.gif"));
-        Label pow = new Label("PowerUp Brick - 1 Hit, and gives power");
-        pow.setGraphic(new ImageView(power));
-
-        Image hydra = new Image(this.getClass().getClassLoader().getResourceAsStream("brick2.gif"));
-        Label hyd = new Label("Hydra Brick - Splits into 2 Children (1 Hit each)");
-        hyd.setGraphic(new ImageView(hydra));
-        VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.getChildren().addAll(reg, h, perm, pow, hyd);
-        vbox.setLayoutX(90); vbox.setLayoutY(270);
-        return vbox;
-    }
-    private Rectangle generateHypno(){
+    private Rectangle generateHypno() {
         Rectangle hypno = new Rectangle(50, 50);
         Image hypnoImage = new Image(this.getClass().getClassLoader().getResourceAsStream("hypno.gif"));
         ImagePattern hypnoImagePattern = new ImagePattern(hypnoImage);
         hypno.setFill(hypnoImagePattern);
         return hypno;
     }
+
     /***
-     * Starting splash screen with
-     * name, instructions, start button, etc.
-     * @return Scene startScene
+     * returns the gameScene (for first level by default)
+     * @return gameScene: current game scene
      */
-    private Scene startScreen(){
-        Button cont = new Button("Start Game");
-        cont.setLayoutX(210); cont.setLayoutY(450);
-        cont.setOnAction(e -> advanceScene(gameScene));
-
-        Label Header = new Label("?Random Breakout¿");
-        Header.setFont(new Font("Garamond", 30));
-        Header.setTextFill(Color.DARKCYAN);
-        Header.setLayoutX(140); Header.setLayoutY(10);
-
-        Rectangle hypno = generateHypno();
-        hypno.setLayoutX(230); hypno.setLayoutY(50);
-
-        Label rules = new Label("GAME RULES\n" +
-                "\t 1. Use arrow keys to move paddle to guide ball to pop bricks\n" +
-                "\t 2. You get three lives per level\n" +
-                "\t 3. There are different types of bricks in this game\n" +
-                "\t 4. Use powerups such as Stretch, Swift, or Life+ \n"+
-                "\t 4. In the middle of the level controls change (such as arrow keys)\n"+
-                "\t\t Adapt to this change and finish the level!");
-
-        rules.setLayoutX(40); rules.setLayoutY(120);
-        rules.setFont(new Font("Garamond", 15));
-        VBox vbox = GetBricksKey();
-        Group startRoot = new Group();
-        startRoot.getChildren().addAll(Header,hypno, rules, cont, vbox);
-        return new Scene(startRoot, SIZE+100, SIZE+100, BACKGROUND);
+    public Scene getGameScene() {
+        return gameScene;
     }
 
+    /***
+     * return window size
+     * @return window size
+     */
+    public int getSize(){
+        return SIZE;
+    }
+
+    /***
+     *
+     * @return game background
+     */
+    public Paint getBackground(){
+        return BACKGROUND;
+    }
     /***
      * advances to the nextScene, by
      * putting it on the Stage, and
      * creating a new Timeline
      * @param nextScene
      */
-    private void advanceScene(Scene nextScene){
+    public void advanceScene(Scene nextScene){
         this.gameScene = nextScene;
         stage.setScene(gameScene);
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
